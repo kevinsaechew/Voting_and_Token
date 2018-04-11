@@ -1,10 +1,19 @@
 var stage; // Stage/Canvas
 const nodeRadius = 40;
 const bgNodeRadius = 200; // Larger Node Radius
-var canvas = document.getElementById("demoCanvas");
+var canvas = document.getElementById('demoCanvas');
 var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
 var mainView = null;
+
+var lastClickedShape = null;
+var lastCommand = null;
+var last_x = null;
+var last_y = null;
+var last_radius = null;
+var last_label = null;
+
+
 
 var button = document.getElementById("zoom-out-button");
 button.addEventListener("click", function(event) {
@@ -40,6 +49,15 @@ addNodeButton.addEventListener("click", function(event) {
     console.log("here");
 });
 
+var editLabelButton = document.getElementById("edit-label-button");
+editLabelButton.addEventListener("click", function(event) {
+    var newLabelName = document.getElementById('label-name').value;
+    //console.log(newLabelName);
+    last_label.text = newLabelName;
+    stage.update();
+});
+
+
 function init() {
     load();
     displayNode();
@@ -74,7 +92,7 @@ function displayNode() {
     var testModels = [];
 
     var last = new NodeModel("MethodJ", "https://www.methodj.com/maya-2016-female-body-modeling-tutorial/");
-    testModels.push(new NodeModel("modeling", [last]));
+    testModels.push(new NodeModel("First", [last]));
 
     
 
@@ -157,9 +175,37 @@ class NodeView {
         this.y = y;
         this.depth = depth;
         
-        this.circle = null; //ehh
+        this.circle = new createjs.Shape(); //ehh
+        this.label = new createjs.Text(this.model.label, "16px Georgia");
+       // this.command = this.circle.graphics.beginStroke("#009999").command;
+
+        var _this = this; 
 
         this.renderNode();
+
+        this.circle.addEventListener("click", function(event){
+          //  selectNode();
+          
+          if (lastClickedShape != null && lastClickedShape != _this.circle) {
+            //lastCommand.style = "blue";
+            lastClickedShape.graphics.clear().beginStroke("#009999").drawCircle(last_x, last_y, last_radius);
+            lastClickedShape.graphics.beginFill("#EEFFFF").drawCircle(last_x, last_y, last_radius);
+
+          }
+
+          lastClickedShape = _this.circle;
+          last_label = _this.label;
+          last_x = _this.x;
+          last_y = _this.y;
+          last_radius = _this.radius;
+         // lastCommand = _this.command;
+        //  lastCommand.style = "yellow";
+        lastClickedShape.graphics.clear().beginStroke("#EE9999").drawCircle(_this.x, _this.y, _this.radius);
+        lastClickedShape.graphics.beginFill("#EEFFFF").drawCircle(_this.x, _this.y, _this.radius);
+
+            stage.update();
+        });
+
         
         if(typeof nodeModel.content != "string") {
             
@@ -168,12 +214,14 @@ class NodeView {
                 
                 this.renderContent(nodeModel.content);
             }
+
+
             this.circle.addEventListener("dblclick", function(event){
                 mainView = new NodeView(nodeModel, canvasWidth/2, canvasHeight/2, 0);
                 stage.update();
             });
         } else {
-            this.circle.addEventListener("dblclick", function(event){ // Changed to double-clicking
+            this.circle.addEventListener("dblclick", function(event){
                 window.open(nodeModel.content);
             });
         }
@@ -181,7 +229,7 @@ class NodeView {
 
     renderNode() {
         //background ellipse
-        this.circle = new createjs.Shape();
+        //this.circle = new createjs.Shape();
         this.circle.graphics.beginFill("#EEFFFF").drawCircle(this.x, this.y, this.radius);
         this.circle.graphics.beginStroke("#009999").drawCircle(this.x, this.y, this.radius);
         
@@ -190,14 +238,14 @@ class NodeView {
             this.circle.cursor = "pointer";
         }
 
-        var label = new createjs.Text(this.model.label, "16px Georgia");
-        label.x = this.x;
-        label.y = this.y - 9;
-        label.color = "#004444";
-        label.set({textAlign:'center'});
+        //var label = new createjs.Text(this.model.label, "16px Georgia");
+        this.label.x = this.x;
+        this.label.y = this.y - 9;
+        this.label.color = "#004444";
+        this.label.set({textAlign:'center'});
 
         stage.addChild(this.circle);
-        stage.addChild(label);
+        stage.addChild(this.label);
     }
 
     
