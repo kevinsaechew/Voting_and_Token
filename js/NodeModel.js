@@ -3,6 +3,7 @@ class NodeModel {
         this.label = label;
         this.parent = null;
         this.content = content;
+        this.weight = 1;
 
         if (typeof this.content != "string") {
             var i;
@@ -10,5 +11,14 @@ class NodeModel {
                 this.content[i].parent = this;
             }
         }
+    }
+
+    upvote(){
+        this.weight += .1;
+    }
+
+    downvote(){
+        console.log("HERE");
+        this.weight -= .1;
     }
 }

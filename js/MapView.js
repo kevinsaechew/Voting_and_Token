@@ -72,6 +72,21 @@ class MapView {
             _this.lastClickedView.label.text = newLabelName;
             _this.stage.update();
         });
+
+        var upvoteButton = document.getElementById("Upvote-button");
+        upvoteButton.addEventListener("click", function (event) {
+            _this.lastClickedView.model.upvote();
+            _this.lastClickedView.renderNode();
+            _this.stage.update();
+        });
+
+        var downvoteButton = document.getElementById("Downvote-button");
+        downvoteButton.addEventListener("click", function (event) {
+            console.log("HERE");
+            _this.lastClickedView.model.downvote();
+            _this.lastClickedView.renderNode();
+            _this.stage.update();
+        });
     }
     createBackButton() {
         var backLabel = new createjs.Text("back", "Bold 16px Arial");

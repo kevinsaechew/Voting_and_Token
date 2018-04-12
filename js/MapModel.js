@@ -1,8 +1,9 @@
 class MapModel {
-    constructor(name) {
+    constructor(name, author) {
         this.name = name;
         this.root = new NodeModel(name, []); // Creates root node
         this.nodes = {};
+        this.author = author;
     }
 
     addNode(existingNode, newNode) {

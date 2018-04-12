@@ -13,27 +13,38 @@
 <body class="container" onload="init();">
   <h1>Upvoting/Downvoting Token Demo</h1>
   <div class="col-sm-7 margin-top-3" >
-        <!-- Elements to render elements on -->
+        <!-- canvas to render elements on -->
         <canvas id="demoCanvas" width="600" height="500" style="border:1px solid #333333;"></canvas>
+        
         <div id="button-list">
             <button id="zoom-out-button" width="100" height="50">Zoom out</button>
          </div>
+         <br>
          <button id="add-link-button" width="100" height="50">Add Link</button>
 
          <form>
             <input id="link-name" type="text" name="link-name" placeholder="Link URL">
         </form>
         
-        <!-- Main Program UI -->
+        <br>
+
         <button id="add-node-button" width="100" height="50">Add Node</button>
         <form>
             <input id="node-name" type="text" name="node-name" placeholder="Node Name">
         </form>
-
+        
+        <br>
+        
         <button id="edit-label-button" width="100" height="50">Edit Label</button>
         <form>
             <input id="label-name" type="text" name="label-name" placeholder="Label Name">
         </form>
+        
+        <br>
+        
+        <button id="Upvote-button" width="100" height="50">Upvote</button>
+
+        <button id="Downvote-button" width="100" height="50">Downvote</button>
 
     <h2>Candidates</h2>
     <div class="table-responsive">

@@ -1,14 +1,17 @@
 class NodeView {
     constructor(nodeModel, x, y, depth, mapView) {
         this.mapView = mapView;
-        this.radius;
-        if (depth == 0) {
-            this.radius = this.mapView.bgNodeRadius;
-        } else {
-            this.radius = this.mapView.nodeRadius;
-        }
-
+        
         this.model = nodeModel;
+
+        this.defaultRadius;
+        if (depth == 0) {
+            this.defaultRadius = this.mapView.bgNodeRadius;
+        } else {
+            this.defaultRadius = this.mapView.nodeRadius;
+        }
+        this.radius = this.defaultRadius * this.model.weight;
+
         this.x = x;
         this.y = y;
         this.depth = depth;
@@ -16,7 +19,8 @@ class NodeView {
         this.circle = new createjs.Shape(); //ehh
         this.label = new createjs.Text(this.model.label, "16px Georgia");
         // this.command = this.circle.graphics.beginStroke("#009999").command;
-
+        this.mapView.stage.addChild(this.circle);
+        this.mapView.stage.addChild(this.label);
 
         this.renderNode();
 
@@ -37,6 +41,7 @@ class NodeView {
             
 
             //displays view as selected
+            //TODO: factor this out
             _this.mapView.lastClickedView.circle.graphics.clear().beginStroke("#EE9999").drawCircle(_this.x, _this.y, _this.radius);
             _this.mapView.lastClickedView.circle.graphics.beginFill("#EEFFFF").drawCircle(_this.x, _this.y, _this.radius);
 
@@ -58,11 +63,14 @@ class NodeView {
             });
         }
     }
-
+    
     renderNode() {
         //background ellipse
         //this.circle = new createjs.Shape();
-        this.circle.graphics.beginFill("#EEFFFF").drawCircle(this.x, this.y, this.radius);
+
+        this.radius = this.defaultRadius * this.model.weight;
+
+        this.circle.graphics.clear().beginFill("#EEFFFF").drawCircle(this.x, this.y, this.radius);
         this.circle.graphics.beginStroke("#009999").drawCircle(this.x, this.y, this.radius);
 
         //if this is not the top-level node, show pointer cursor on hover
@@ -76,8 +84,7 @@ class NodeView {
         this.label.color = "#004444";
         this.label.set({ textAlign: 'center' });
 
-        this.mapView.stage.addChild(this.circle);
-        this.mapView.stage.addChild(this.label);
+        
         this.mapView.stage.update();
 
     }
