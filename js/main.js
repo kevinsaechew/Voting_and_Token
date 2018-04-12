@@ -17,5 +17,5 @@ function load() {
     // make a view of this model
     var stage = new createjs.Stage("demoCanvas");
     var canvas = document.getElementById('demoCanvas');
-    mainMap = new MapView(mapModel, stage, canvas);
+    mainMap = new MapView(mapModel, stage, canvas, user);
 }

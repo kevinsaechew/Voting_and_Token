@@ -2,6 +2,6 @@ class User {
     constructor(address, name) {
         this.address = address;
         this.name = name;
-        this.prestige = 0;
+        this.prestige = 5;
     }
 }

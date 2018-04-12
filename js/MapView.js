@@ -1,5 +1,5 @@
 class MapView {
-    constructor(mapModel, stage, canvas) {
+    constructor(mapModel, stage, canvas, currUser) {
         this.model = mapModel;
         this.stage = stage;
         this.mainView = null;
@@ -7,11 +7,12 @@ class MapView {
         this.canvasWidth = canvas.width;
         this.canvasHeight = canvas.height;
         this.nodeRadius = 40;
-        this.bgNodeRadius = 200; // Larger Node Radius
+        this.bgNodeRadius = 280; // Larger Node Radius
         
         this.lastClickedView = null;
         this.mapView = this;
-
+        this.currUser = currUser;
+        this.mainFont = "24px Georgia";
         this.loadMapView();
     }
 
@@ -19,7 +20,7 @@ class MapView {
         this.createBackButton();
         this.stage.enableMouseOver(10);
 
-        this.mainView = new NodeView(this.model.root, this.canvasWidth / 2, this.canvasHeight / 2, 0, this.mapView);
+        this.mainView = new NodeView(this.model.root, this.canvasWidth / 2, this.canvasHeight / 2, 0, this.mapView, this.mainFont);
         
         this.addButtons();
         this.stage.update();
@@ -33,7 +34,7 @@ class MapView {
         
         button.addEventListener("click", function (event) {
             if (_this.mainView != null && _this.mainView.model.parent != null) { // "mainView.model.parent != null" to prevent console error
-                _this.mainView = new NodeView(_this.mainView.model.parent, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView);
+                _this.mainView = new NodeView(_this.mainView.model.parent, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView, _this.mainFont);
                 _this.stage.update();
             }
         }, false);
@@ -43,9 +44,9 @@ class MapView {
         addLinkButton.addEventListener("click", function (event) {
             var nodeName = "new link";
             var linkURL = document.getElementById('link-name').value;
-            var newNode = new NodeModel(nodeName, linkURL);
+            var newNode = new NodeModel(nodeName, linkURL, _this.currUser);
             _this.mainView.model.content.push(newNode);
-            _this.mainView = new NodeView(_this.mainView.model, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView);
+            _this.mainView = new NodeView(_this.mainView.model, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView, _this.mainFont);
             _this.stage.update();
     
         });
@@ -55,10 +56,10 @@ class MapView {
         addNodeButton.addEventListener("click", function (event) {
             var nodeName = document.getElementById('node-name').value;
             var content = [];
-            var newNode = new NodeModel(nodeName, content);
+            var newNode = new NodeModel(nodeName, content, _this.currUser);
             newNode.parent = _this.mainView.model; // ^^ Maybe the parent can be added to the NodeModel constructor
             _this.mainView.model.content.push(newNode);
-            _this.mainView = new NodeView(_this.mainView.model, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView);
+            _this.mainView = new NodeView(_this.mainView.model, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView, _this.mainFont);
             _this.stage.update();
         });
     
@@ -98,7 +99,7 @@ class MapView {
         var _this = this;
         backLabel.addEventListener("click", function (event) {
             if (_this.mainView != null && _this.mainView.model.parent != null) { // "_this.mainView.model.parent != null" to prevent console error
-                _this.mainView = new NodeView(_this.mainView.model.parent, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView);
+                _this.mainView = new NodeView(_this.mainView.model.parent, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView, "24px Georgia");
                 _this.stage.update();
             }
         }, false);

@@ -1,9 +1,10 @@
 class NodeModel {
-    constructor(label, content) {
+    constructor(label, content, author) {
         this.label = label;
         this.parent = null;
         this.content = content;
         this.weight = 1;
+        this.author = author;
 
         if (typeof this.content != "string") {
             var i;
