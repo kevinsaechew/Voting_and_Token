@@ -7,15 +7,9 @@ contract Voting {
     address voterAddress; // The address of the voter
     uint tokensBought;    // The total no. of tokens this voter owns
     uint[] tokensUsedPerCandidate; // Array to keep track of votes per candidate.
-    /* We have an array of candidates initialized below.
-     Every time this voter votes with her tokens, the value at that
-     index is incremented. Example, if candidateList array declared
-     below has candidates and this
-     voter votes 10 tokens to Nick, the tokensUsedPerCandidate[1]
-     will be incremented by 10.
-     */
-  }
+    uint tokensOwned;
 
+  }
   /* mapping is equivalent to an associate array or hash
    The key of the mapping is candidate name stored as type bytes32 and value is
    an unsigned integer which used to store the vote count
@@ -26,7 +20,11 @@ contract Voting {
   /* Solidity doesn't let you return an array of strings yet. We will use an array of bytes32
    instead to store the list of candidates
    */
-
+   
+  // bytes32 for "non-dynamic Strings"
+  // 1) We can have the users keep the number of votes
+  // 2) We can display the # of votes a node has 
+  
   mapping (bytes32 => uint) public votesReceived;
 
   bytes32[] public candidateList;
@@ -52,47 +50,50 @@ contract Voting {
   /* Instead of just taking the candidate name as an argument, we now also
    require the no. of tokens this voter wants to vote for the candidate
    */
-  function voteForCandidate(bytes32 candidate, uint votesInTokens) public {
-    uint index = indexOfCandidate(candidate);
+  // Added toAddress
+  function voteForCandidate(bytes32 candidate, address toAddress, uint votesInTokens) public {
+    uint index = indexOfCandidate(candidate); 
     require(index != uint(-1));
 
     // msg.sender gives us the address of the account/voter who is trying
     // to call this function
-    if (voterInfo[msg.sender].tokensUsedPerCandidate.length == 0) {
+    if (voterInfo[msg.sender].tokensUsedPerCandidate.length == 0) { // initializes the array
       for(uint i = 0; i < candidateList.length; i++) {
         voterInfo[msg.sender].tokensUsedPerCandidate.push(0);
       }
     }
 
     // Make sure this voter has enough tokens to cast the vote
-    uint availableTokens = voterInfo[msg.sender].tokensBought - totalTokensUsed(voterInfo[msg.sender].tokensUsedPerCandidate);
+    //uint availableTokens = voterInfo[msg.sender].tokensBought - totalTokensUsed(voterInfo[msg.sender].tokensUsedPerCandidate);
+    uint availableTokens = voterInfo[msg.sender].tokensOwned;
     require(availableTokens >= votesInTokens);
 
     votesReceived[candidate] += votesInTokens;
+    // Gives token to holder of the toAddress
+    voterInfo[toAddress].tokensOwned += votesInTokens; // increases holdings of receiver
+    voterInfo[msg.sender].tokensOwned -= votesInTokens; // decrements tokens owned by sender
 
     // Store how many tokens were used for this candidate
     voterInfo[msg.sender].tokensUsedPerCandidate[index] += votesInTokens;
   }
 
-    function downvoteForCandidate(bytes32 candidate, uint votesInTokens) public {
+  function downvoteForCandidate(bytes32 candidate, uint votesInTokens) public {
     uint index = indexOfCandidate(candidate);
     require(index != uint(-1));
 
-    // msg.sender gives us the address of the account/voter who is trying
-    // to call this function
     if (voterInfo[msg.sender].tokensUsedPerCandidate.length == 0) {
       for(uint i = 0; i < candidateList.length; i++) {
         voterInfo[msg.sender].tokensUsedPerCandidate.push(0);
       }
     }
-
-    // Make sure this voter has enough tokens to cast the vote
-    uint availableTokens = voterInfo[msg.sender].tokensBought - totalTokensUsed(voterInfo[msg.sender].tokensUsedPerCandidate);
+    //uint availableTokens = voterInfo[msg.sender].tokensBought - totalTokensUsed(voterInfo[msg.sender].tokensUsedPerCandidate);
+    uint availableTokens = voterInfo[msg.sender].tokensOwned;
     require(availableTokens >= votesInTokens);
 
     votesReceived[candidate] -= votesInTokens;
 
-    // Store how many tokens were used for this candidate
+    voterInfo[msg.sender].tokensOwned -= votesInTokens; // decrements tokens owned by sender
+
     voterInfo[msg.sender].tokensUsedPerCandidate[index] += votesInTokens;
   }
 
@@ -125,6 +126,7 @@ contract Voting {
     require(tokensToBuy <= balanceTokens);
     voterInfo[msg.sender].voterAddress = msg.sender;
     voterInfo[msg.sender].tokensBought += tokensToBuy;
+    voterInfo[msg.sender].tokensOwned += tokensToBuy;
     balanceTokens -= tokensToBuy;
     return tokensToBuy;
   }
@@ -133,8 +135,8 @@ contract Voting {
     return totalTokens - balanceTokens;
   }
 
-  function voterDetails(address user) view public returns (uint, uint[]) {
-    return (voterInfo[user].tokensBought, voterInfo[user].tokensUsedPerCandidate);
+  function voterDetails(address user) view public returns (uint, uint[], uint) {
+    return (voterInfo[user].tokensBought, voterInfo[user].tokensUsedPerCandidate, voterInfo[user].tokensOwned);
   }
 
   /* All the ether sent by voters who purchased the tokens is in this

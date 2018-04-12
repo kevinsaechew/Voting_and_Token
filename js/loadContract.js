@@ -1,10 +1,10 @@
 
 web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-abi = JSON.parse('[{"constant":true,"inputs":[{"name":"candidate","type":"bytes32"}],"name":"totalVotesFor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokensSold","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"user","type":"address"}],"name":"voterDetails","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"candidate","type":"bytes32"},{"name":"votesInTokens","type":"uint256"}],"name":"voteForCandidate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"votesReceived","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"candidate","type":"bytes32"},{"name":"votesInTokens","type":"uint256"}],"name":"downvoteForCandidate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"allCandidates","outputs":[{"name":"","type":"bytes32[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"account","type":"address"}],"name":"transferTo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"candidateList","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"voterInfo","outputs":[{"name":"voterAddress","type":"address"},{"name":"tokensBought","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"balanceTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"candidate","type":"bytes32"}],"name":"indexOfCandidate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"tokens","type":"uint256"},{"name":"pricePerToken","type":"uint256"},{"name":"candidateNames","type":"bytes32[]"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]')
+abi = JSON.parse('[{"constant":true,"inputs":[{"name":"candidate","type":"bytes32"}],"name":"totalVotesFor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokensSold","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"user","type":"address"}],"name":"voterDetails","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256[]"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"votesReceived","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"candidate","type":"bytes32"},{"name":"votesInTokens","type":"uint256"}],"name":"downvoteForCandidate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"allCandidates","outputs":[{"name":"","type":"bytes32[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"candidate","type":"bytes32"},{"name":"toAddress","type":"address"},{"name":"votesInTokens","type":"uint256"}],"name":"voteForCandidate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"account","type":"address"}],"name":"transferTo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"candidateList","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"voterInfo","outputs":[{"name":"voterAddress","type":"address"},{"name":"tokensBought","type":"uint256"},{"name":"tokensOwned","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"balanceTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"candidate","type":"bytes32"}],"name":"indexOfCandidate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"tokens","type":"uint256"},{"name":"pricePerToken","type":"uint256"},{"name":"candidateNames","type":"bytes32[]"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]');
 
 Voting = web3.eth.contract(abi);
 
-contractInstance = Voting.at('0x30753e4a8aad7f8597332e813735def5dd395028'); // Change to actual contract address
+contractInstance = Voting.at('0x1cff61b8259f05f4bbf7aa4f769321e5fa70b22d'); // Change to actual contract address
 
 let candidates = {} // Used to be hard-coded
 
@@ -17,7 +17,26 @@ window.voteForCandidate = function(candidate) {
   $("#candidate").val("");
   $("#vote-tokens").val("");
 
-    contractInstance.voteForCandidate(candidateName, voteTokens, {gas: 140000, from: web3.eth.accounts[0]});//.then(function() {
+  /* Voting.deployed() returns an instance of the contract. Every call
+   * in Truffle returns a promise which is why we have used then()
+   * everywhere we have a transaction call
+   */
+    contractInstance.voteForCandidate(candidateName, web3.eth.accounts[1], voteTokens, {gas: 240000, from: web3.eth.accounts[0]});//.then(function() {
+      let div_id = candidates[candidateName];
+      result = contractInstance.totalVotesFor.call(candidateName); 
+        $("#" + div_id).html(result.toString());
+        $("#msg").html("");
+      return result
+}
+
+window.downvoteForCandidate = function(candidate) {
+  let candidateName = $("#candidate").val();
+  let voteTokens = $("#vote-tokens").val();
+  $("#msg").html("Vote has been submitted: Insufficient tokens needed to vote")
+  $("#candidate").val("");
+  $("#vote-tokens").val("");
+
+    contractInstance.downvoteForCandidate(candidateName, web3.eth.accounts[1], voteTokens, {gas: 140000, from: web3.eth.accounts[0]});//.then(function() {
       let div_id = candidates[candidateName];
       result = contractInstance.totalVotesFor.call(candidateName);
         $("#" + div_id).html(result.toString());
@@ -26,14 +45,33 @@ window.voteForCandidate = function(candidate) {
 
 }
 
-window.downvoteForCandidate = function(candidate) {
+window.voteForCandidate2 = function(candidate) {
   let candidateName = $("#candidate").val();
   let voteTokens = $("#vote-tokens").val();
   $("#msg").html("Vote has been submitted. The vote count will increment as soon as the vote is recorded on the blockchain. Please wait.")
   $("#candidate").val("");
   $("#vote-tokens").val("");
 
-    contractInstance.downvoteForCandidate(candidateName, voteTokens, {gas: 140000, from: web3.eth.accounts[0]});//.then(function() {
+  /* Voting.deployed() returns an instance of the contract. Every call
+   * in Truffle returns a promise which is why we have used then()
+   * everywhere we have a transaction call
+   */
+    contractInstance.voteForCandidate(candidateName, web3.eth.accounts[0], voteTokens, {gas: 140000, from: web3.eth.accounts[1]});//.then(function() {
+      let div_id = candidates[candidateName];
+      result = contractInstance.totalVotesFor.call(candidateName); 
+        $("#" + div_id).html(result.toString());
+        $("#msg").html("");
+      return result
+}
+
+window.downvoteForCandidate2 = function(candidate) {
+  let candidateName = $("#candidate").val();
+  let voteTokens = $("#vote-tokens").val();
+  $("#msg").html("Vote has been submitted: Insufficient tokens needed to vote")
+  $("#candidate").val("");
+  $("#vote-tokens").val("");
+
+    contractInstance.downvoteForCandidate(candidateName, web3.eth.accounts[0], voteTokens, {gas: 140000, from: web3.eth.accounts[1]});//.then(function() {
       let div_id = candidates[candidateName];
       result = contractInstance.totalVotesFor.call(candidateName);
         $("#" + div_id).html(result.toString());
@@ -71,6 +109,7 @@ window.lookupVoterInfo = function() {
       for(let i=0; i < allCandidates.length; i++) {
         $("#votes-cast").append(allCandidates[i] + ": " + votesPerCandidate[i] + "<br>");
       }
+      $("#tokens-owned").html("Total Tokens owned: " + "2");//voterDets[2].toString());
 
 }
 
