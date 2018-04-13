@@ -79,6 +79,11 @@ class MapView {
             _this.lastClickedView.model.upvote();
             _this.lastClickedView.renderNode();
             _this.stage.update();
+
+            // todo: call the function to transfer tokens 
+            // from _this.currUser.address to _this.lastClickedView.model.author.address
+            //console.log();
+            voteForNode(_this.lastClickedView.model.author.name, 1, _this.currUser.address, _this.lastClickedView.model.author.address);
         });
 
         var downvoteButton = document.getElementById("Downvote-button");

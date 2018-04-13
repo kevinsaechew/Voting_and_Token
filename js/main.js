@@ -16,6 +16,8 @@ function load() {
     // create map model with a Modeling, and Method J node
     var mapModel = new MapModel("CG Animation", mainUser);
     var modelingNM = mapModel.addNode(mapModel.root, new NodeModel("Modeling", [], secondUser));
+    var secondUserNM = mapModel.addNode(mapModel.root, new NodeModel("secondUser", [], secondUser));
+    var thirdUserNM = mapModel.addNode(mapModel.root, new NodeModel("thirdUser", [], thirdUser));
     mapModel.addNode(modelingNM, new NodeModel("MethodJ", "https://www.methodj.com/maya-2016-female-body-modeling-tutorial/", thirdUser));
 
     // make a view of this model

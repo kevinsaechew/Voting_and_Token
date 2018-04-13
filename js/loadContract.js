@@ -21,7 +21,12 @@ window.voteForCandidate = function(candidate) {
    * in Truffle returns a promise which is why we have used then()
    * everywhere we have a transaction call
    */
-    contractInstance.voteForCandidate(candidateName, web3.eth.accounts[1], voteTokens, {gas: 240000, from: web3.eth.accounts[0]});//.then(function() {
+  
+      return voteForNode(candidateName, voteTokens, web3.eth.accounts[0], web3.eth.accounts[1]);
+}
+
+function voteForNode(candidateName, voteTokens, fromAddress, toAddress) {
+  contractInstance.voteForCandidate(candidateName, toAddress, voteTokens, {gas: 240000, from: fromAddress});//.then(function() {
       let div_id = candidates[candidateName];
       result = contractInstance.totalVotesFor.call(candidateName); 
         $("#" + div_id).html(result.toString());
@@ -36,7 +41,7 @@ window.downvoteForCandidate = function(candidate) {
   $("#candidate").val("");
   $("#vote-tokens").val("");
 
-    contractInstance.downvoteForCandidate(candidateName, web3.eth.accounts[1], voteTokens, {gas: 140000, from: web3.eth.accounts[0]});//.then(function() {
+    contractInstance.downvoteForCandidate(candidateName, voteTokens, {gas: 140000, from: web3.eth.accounts[0]});//.then(function() {
       let div_id = candidates[candidateName];
       result = contractInstance.totalVotesFor.call(candidateName);
         $("#" + div_id).html(result.toString());
@@ -52,10 +57,7 @@ window.voteForCandidate2 = function(candidate) {
   $("#candidate").val("");
   $("#vote-tokens").val("");
 
-  /* Voting.deployed() returns an instance of the contract. Every call
-   * in Truffle returns a promise which is why we have used then()
-   * everywhere we have a transaction call
-   */
+
     contractInstance.voteForCandidate(candidateName, web3.eth.accounts[0], voteTokens, {gas: 140000, from: web3.eth.accounts[1]});//.then(function() {
       let div_id = candidates[candidateName];
       result = contractInstance.totalVotesFor.call(candidateName); 
@@ -78,6 +80,27 @@ window.downvoteForCandidate2 = function(candidate) {
         $("#msg").html("");
       return result
 
+}
+
+// New function for voting based on selected Node
+// Takes tokens from first account
+// This function would also call MapView's function
+window.voteForCandidateNode = function(candidate) {
+  let candidateName = $("#candidate").val();
+  let voteTokens = $("#vote-tokens").val();
+  $("#msg").html("Vote has been submitted.");
+  $("#candidate").val("");
+  $("#vote-tokens").val("");
+
+  // let account = user.account
+  // let candidateName = user.owner instead of getting owner from text field 
+
+    contractInstance.voteForCandidate(candidateName, account, voteTokens, {gas: 140000, from: web3.eth.accounts[0]});
+      let div_id = candidates[candidateName];
+      result = contractInstance.totalVotesFor.call(candidateName); 
+        $("#" + div_id).html(result.toString());
+        $("#msg").html("");
+      return result
 }
 
 /* The user enters the total no. of tokens to buy. We calculate the total cost and send it in
@@ -109,7 +132,7 @@ window.lookupVoterInfo = function() {
       for(let i=0; i < allCandidates.length; i++) {
         $("#votes-cast").append(allCandidates[i] + ": " + votesPerCandidate[i] + "<br>");
       }
-      $("#tokens-owned").html("Total Tokens owned: " + "2");//voterDets[2].toString());
+      $("#tokens-owned").html("Total Tokens owned: " + voterDets[2].toString());
 
 }
 
