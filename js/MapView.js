@@ -12,7 +12,7 @@ class MapView {
         this.nodeRadius = 40;
         this.bgNodeRadius = 280; // Larger Node Radius
         
-        this.lastClickedView = null;
+        this.selectedNodes = [];
         this.mapView = this;
         this.currUser = currUser;
         this.mainFont = "24px Georgia";
@@ -48,7 +48,7 @@ class MapView {
             var nodeName = "new link";
             var linkURL = document.getElementById('link-name').value;
             var newNode = new NodeModel(nodeName, linkURL, _this.currUser);
-            _this.mainView.model.content.push(newNode);
+            _this.mainView.model.addNode(newNode);
             _this.mainView = new NodeView(_this.mainView.model, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView, _this.mainFont);
             _this.stage.update();
     
@@ -61,28 +61,58 @@ class MapView {
             var content = [];
             var newNode = new NodeModel(nodeName, content, _this.currUser);
             newNode.parent = _this.mainView.model; // ^^ Maybe the parent can be added to the NodeModel constructor
-            _this.mainView.model.content.push(newNode);
+            _this.mainView.model.addNode(newNode);
             _this.mainView = new NodeView(_this.mainView.model, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView, _this.mainFont);
             _this.stage.update();
         });
-        
-        // Adds functionality to the EditLabel button.
+
+        // this removes a selected node
+        var deleteNodeButton = document.getElementById("delete-node-button");
+        deleteNodeButton.addEventListener("click", function (event) {
+            var i;
+            for(i = 0; i < _this.selectedNodes.length; i++){
+                _this.selectedNodes[i].delete();
+                _this.model.removeNode(_this.selectedNodes[i].model);
+            }
+            _this.stage.update();
+        });
+
+        // this removes a selected node
+        var groupNodeButton = document.getElementById("group-node-button");
+        groupNodeButton.addEventListener("click", function (event) {
+            var contentNodes = [];
+            var i;
+            for(i = 0; i < _this.selectedNodes.length; i++){
+                contentNodes.push(_this.selectedNodes[i]);
+                _this.selectedNodes[i].delete();
+                _this.model.removeNode(_this.selectedNodes[i].model);
+            }
+            _this.stage.update();
+        });
+    
         var editLabelButton = document.getElementById("edit-label-button");
         editLabelButton.addEventListener("click", function (event) {
             var newLabelName = document.getElementById('label-name').value;
             //console.log(newLabelName);
     
             //TODO: Make a method that's UpdateLabelText() in the View, which updates the model
-            _this.lastClickedView.model.label = newLabelName;
-            _this.lastClickedView.label.text = newLabelName;
+            var i;
+            for(i = 0; i < _this.selectedNodes.length; i++){
+                _this.selectedNodes[i].model.label = newLabelName;
+                _this.selectedNodes[i].label.text = newLabelName;
+            }
+            
             _this.stage.update();
         });
 
         // Adds functionality to the upvote button.
         var upvoteButton = document.getElementById("Upvote-button");
         upvoteButton.addEventListener("click", function (event) {
-            _this.lastClickedView.model.upvote();
-            _this.lastClickedView.renderNode();
+            var i;
+            for(i = 0; i < _this.selectedNodes.length; i++){
+                _this.selectedNodes[i].model.upvote();
+                _this.selectedNodes[i].renderNode();
+            }
             _this.stage.update();
 
             // todo: call the function to transfer tokens 
@@ -94,9 +124,11 @@ class MapView {
         // Adds functionality to the downvote button.
         var downvoteButton = document.getElementById("Downvote-button");
         downvoteButton.addEventListener("click", function (event) {
-            console.log("HERE");
-            _this.lastClickedView.model.downvote();
-            _this.lastClickedView.renderNode();
+            var i;
+            for(i = 0; i < _this.selectedNodes.length; i++){
+                _this.selectedNodes[i].model.downvote();
+                _this.selectedNodes[i].renderNode();
+            }
             _this.stage.update();
         });
 

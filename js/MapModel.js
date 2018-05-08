@@ -13,13 +13,13 @@ class MapModel {
 
     // Adds a new node to an existing node's list
     addNode(existingNode, newNode) {
-        newNode.parent = existingNode;
-        existingNode.content.push(newNode);
+        //newNode.parent = existingNode;
+        existingNode.addNode(newNode);
         return newNode;
     }
 
-    removeNode() {
-
+    removeNode(node) {
+        //delete thisIsObject[node];
     }
 
     groupUnderParent() {

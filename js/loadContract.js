@@ -1,81 +1,93 @@
-
+// get instance of smart contract
 web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-abi = JSON.parse('[{"constant":true,"inputs":[{"name":"candidate","type":"bytes32"}],"name":"totalVotesFor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokensSold","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"user","type":"address"}],"name":"voterDetails","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256[]"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"votesReceived","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"candidate","type":"bytes32"},{"name":"votesInTokens","type":"uint256"}],"name":"downvoteForCandidate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"allCandidates","outputs":[{"name":"","type":"bytes32[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"candidate","type":"bytes32"},{"name":"toAddress","type":"address"},{"name":"votesInTokens","type":"uint256"}],"name":"voteForCandidate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"account","type":"address"}],"name":"transferTo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"candidateList","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"voterInfo","outputs":[{"name":"voterAddress","type":"address"},{"name":"tokensBought","type":"uint256"},{"name":"tokensOwned","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"balanceTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"candidate","type":"bytes32"}],"name":"indexOfCandidate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"tokens","type":"uint256"},{"name":"pricePerToken","type":"uint256"},{"name":"candidateNames","type":"bytes32[]"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]');
-
+abi = JSON.parse('[{"constant":true,"inputs":[{"name":"user","type":"bytes32"}],"name":"totalVotesFor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokensSold","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"user","type":"address"}],"name":"voterDetails","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256[]"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"votesReceived","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"user","type":"bytes32"},{"name":"votesInTokens","type":"uint256"}],"name":"downvoteForUser","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"allUsers","outputs":[{"name":"","type":"bytes32[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"user","type":"bytes32"},{"name":"toAddress","type":"address"},{"name":"votesInTokens","type":"uint256"}],"name":"voteForUser","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"account","type":"address"}],"name":"transferTo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"userList","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"voterInfo","outputs":[{"name":"voterAddress","type":"address"},{"name":"tokensBought","type":"uint256"},{"name":"tokensOwned","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"balanceTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"user","type":"bytes32"}],"name":"indexOfUser","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"tokens","type":"uint256"},{"name":"pricePerToken","type":"uint256"},{"name":"userNames","type":"bytes32[]"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]');
 Voting = web3.eth.contract(abi);
-
 contractInstance = Voting.at('0x1cff61b8259f05f4bbf7aa4f769321e5fa70b22d'); // Change to actual contract address
 
-let candidates = {} // Used to be hard-coded
+// a dictionary of users
+let users = {}
 
+// current token price
 let tokenPrice = null;
 
-window.voteForCandidate = function(candidate) {
-  let candidateName = $("#candidate").val();
+
+window.voteForUser = function(user) {
+  let userName = $("#user").val();
   let voteTokens = $("#vote-tokens").val();
   $("#msg").html("Vote has been submitted. The vote count will increment as soon as the vote is recorded on the blockchain. Please wait.")
-  $("#candidate").val("");
+  $("#user").val("");
   $("#vote-tokens").val("");
 
   /* Voting.deployed() returns an instance of the contract. Every call
    * in Truffle returns a promise which is why we have used then()
    * everywhere we have a transaction call
    */
-  
-      return voteForNode(candidateName, voteTokens, web3.eth.accounts[0], web3.eth.accounts[1]);
-}
-
-function voteForNode(candidateName, voteTokens, fromAddress, toAddress) {
-  contractInstance.voteForCandidate(candidateName, toAddress, voteTokens, {gas: 240000, from: fromAddress});//.then(function() {
-      let div_id = candidates[candidateName];
-      result = contractInstance.totalVotesFor.call(candidateName); 
+    contractInstance.voteForUser(userName, web3.eth.accounts[1], voteTokens, {gas: 240000, from: web3.eth.accounts[0]});//.then(function() {
+      let div_id = users[userName];
+      result = contractInstance.totalVotesFor.call(userName); 
         $("#" + div_id).html(result.toString());
         $("#msg").html("");
       return result
 }
 
-window.downvoteForCandidate = function(candidate) {
-  let candidateName = $("#candidate").val();
+window.downvoteForUser = function(user) {
+  let userName = $("#user").val();
   let voteTokens = $("#vote-tokens").val();
   $("#msg").html("Vote has been submitted: Insufficient tokens needed to vote")
-  $("#candidate").val("");
+  $("#user").val("");
   $("#vote-tokens").val("");
 
+<<<<<<< HEAD
     contractInstance.downvoteForCandidate(candidateName, voteTokens, {gas: 140000, from: web3.eth.accounts[0]});//.then(function() {
       let div_id = candidates[candidateName];
       result = contractInstance.totalVotesFor.call(candidateName);
+=======
+    contractInstance.downvoteForUser(userName, web3.eth.accounts[1], voteTokens, {gas: 140000, from: web3.eth.accounts[0]});//.then(function() {
+      let div_id = users[userName];
+      result = contractInstance.totalVotesFor.call(userName);
+>>>>>>> ffe99cf0c9b05e40aa440f663a2541f1d864be4f
         $("#" + div_id).html(result.toString());
         $("#msg").html("");
       return result
 
 }
 
-window.voteForCandidate2 = function(candidate) {
-  let candidateName = $("#candidate").val();
+window.voteForUser2 = function(user) {
+  let userName = $("#user").val();
   let voteTokens = $("#vote-tokens").val();
   $("#msg").html("Vote has been submitted. The vote count will increment as soon as the vote is recorded on the blockchain. Please wait.")
-  $("#candidate").val("");
+  $("#user").val("");
   $("#vote-tokens").val("");
 
+<<<<<<< HEAD
 
     contractInstance.voteForCandidate(candidateName, web3.eth.accounts[0], voteTokens, {gas: 140000, from: web3.eth.accounts[1]});//.then(function() {
       let div_id = candidates[candidateName];
       result = contractInstance.totalVotesFor.call(candidateName); 
+=======
+  /* Voting.deployed() returns an instance of the contract. Every call
+   * in Truffle returns a promise which is why we have used then()
+   * everywhere we have a transaction call
+   */
+    contractInstance.voteForUser(userName, web3.eth.accounts[0], voteTokens, {gas: 140000, from: web3.eth.accounts[1]});//.then(function() {
+      let div_id = users[userName];
+      result = contractInstance.totalVotesFor.call(userName); 
+>>>>>>> ffe99cf0c9b05e40aa440f663a2541f1d864be4f
         $("#" + div_id).html(result.toString());
         $("#msg").html("");
       return result
 }
 
-window.downvoteForCandidate2 = function(candidate) {
-  let candidateName = $("#candidate").val();
+window.downvoteForUser2 = function(user) {
+  let userName = $("#user").val();
   let voteTokens = $("#vote-tokens").val();
   $("#msg").html("Vote has been submitted: Insufficient tokens needed to vote")
-  $("#candidate").val("");
+  $("#user").val("");
   $("#vote-tokens").val("");
 
-    contractInstance.downvoteForCandidate(candidateName, web3.eth.accounts[0], voteTokens, {gas: 140000, from: web3.eth.accounts[1]});//.then(function() {
-      let div_id = candidates[candidateName];
-      result = contractInstance.totalVotesFor.call(candidateName);
+    contractInstance.downvoteForUser(userName, web3.eth.accounts[0], voteTokens, {gas: 140000, from: web3.eth.accounts[1]});//.then(function() {
+      let div_id = users[userName];
+      result = contractInstance.totalVotesFor.call(userName);
         $("#" + div_id).html(result.toString());
         $("#msg").html("");
       return result
@@ -125,48 +137,48 @@ window.lookupVoterInfo = function() {
   let address = $("#voter-info").val();
     voterDets = contractInstance.voterDetails.call(address);
       $("#tokens-bought").html("Total Tokens bought: " + voterDets[0].toString());
-      let votesPerCandidate = voterDets[1];
+      let votesPerUser = voterDets[1];
       $("#votes-cast").empty();
-      $("#votes-cast").append("Votes cast per candidate: <br>");
-      let allCandidates = Object.keys(candidates);
-      for(let i=0; i < allCandidates.length; i++) {
-        $("#votes-cast").append(allCandidates[i] + ": " + votesPerCandidate[i] + "<br>");
+      $("#votes-cast").append("Votes cast per user: <br>");
+      let allUsers = Object.keys(users);
+      for(let i=0; i < allUsers.length; i++) {
+        $("#votes-cast").append(allUsers[i] + ": " + votesPerUser[i] + "<br>");
       }
       $("#tokens-owned").html("Total Tokens owned: " + voterDets[2].toString());
 
 }
 
-/* Instead of hardcoding the candidates hash, we now fetch the candidate list from
- * the blockchain and populate the array. Once we fetch the candidates, we setup the
- * table in the UI with all the candidates and the votes they have received.
+/* Instead of hardcoding the users hash, we now fetch the user list from
+ * the blockchain and populate the array. Once we fetch the users, we setup the
+ * table in the UI with all the users and the votes they have received.
  */
-function populateCandidates() {
-    candidateArray = contractInstance.allCandidates.call()
-      for(let i=0; i < candidateArray.length; i++) {
-        /* We store the candidate names as bytes32 on the blockchain. We use the
+function populateUsers() {
+    userArray = contractInstance.allUsers.call()
+      for(let i=0; i < userArray.length; i++) {
+        /* We store the user names as bytes32 on the blockchain. We use the
          * handy toUtf8 method to convert from bytes32 to string
          */
-        candidates[web3.toUtf8(candidateArray[i])] = "candidate-" + i;
+        users[web3.toUtf8(userArray[i])] = "user-" + i;
       }
-      setupCandidateRows();
-      populateCandidateVotes();
+      setupUserRows();
+      populateUserVotes();
       populateTokenData();
 
 }
 
-function populateCandidateVotes() {
-  let candidateNames = Object.keys(candidates);
-  for (var i = 0; i < candidateNames.length; i++) {
-    let name = candidateNames[i];
+function populateUserVotes() {
+  let userNames = Object.keys(users);
+  for (var i = 0; i < userNames.length; i++) {
+    let name = userNames[i];
   let val = contractInstance.totalVotesFor.call(name).toString() //Reads from network
-  $("#" + candidates[name]).html(val); // Gets DOM object for candidate and updates HTML on page
+  $("#" + users[name]).html(val); // Gets DOM object for user and updates HTML on page
 
   }
 }
 
-function setupCandidateRows() {
-  Object.keys(candidates).forEach(function (candidate) {
-    $("#candidate-rows").append("<tr><td>" + candidate + "</td><td id='" + candidates[candidate] + "'></td></tr>");
+function setupUserRows() {
+  Object.keys(users).forEach(function (user) {
+    $("#user-rows").append("<tr><td>" + user + "</td><td id='" + users[user] + "'></td></tr>");
   });
 }
 
@@ -196,6 +208,6 @@ $( document ).ready(function() {
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
     window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
   }
-  populateCandidates();
+  populateUsers();
 
 });

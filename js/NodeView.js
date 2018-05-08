@@ -1,5 +1,24 @@
-/* NodeView is a class which renders the nodes and places them upon the map.
-   */
+var keysPressed = [],
+    shiftCode = 16;
+
+$(document).on("keyup keydown", function(e) {
+    switch(e.type) {
+        case "keydown" :
+            keysPressed.push(e.keyCode);
+            break;
+        case "keyup" :
+            var idx = keysPressed.indexOf(e.keyCode);
+            if (idx >= 0)
+                keysPressed.splice(idx, 1);
+            break;
+    }
+});
+
+function isKeyPressed(code) {
+    return keysPressed.indexOf(code) >= 0;
+}
+
+
 class NodeView {
     constructor(nodeModel, x, y, depth, mapView, font) {
         this.mapView = mapView;
@@ -34,18 +53,32 @@ class NodeView {
 
         this.renderNode();
 
+
+        
         var _this = this;
         this.circle.addEventListener("click", function (event) {
             
             
             // TODO - add in ID's
-            if (_this.mapView.lastClickedView != null && _this.mapView.lastClickedView.circle != _this.circle) {
-                _this.deselectNode(_this.mapView.lastClickedView);
+            console.log(isKeyPressed(shiftCode));
+
+            // if shift is pressed
+
+            if (isKeyPressed(shiftCode) == false) {
+                // deselect
+                if (_this.mapView.selectedNodes.length > 0) {
+                    if (_this.mapView.selectedNodes[0].circle != _this.circle) {
+                        var i;
+                        for(i = 0; i < _this.mapView.selectedNodes.length; i++){
+                            _this.deselectNode(_this.mapView.selectedNodes[i]);
+                        }
+                    }
+                }
+                _this.mapView.selectedNodes = [];
             }
 
-            
             _this.selectNode(_this);
-            _this.mapView.lastClickedView = _this;
+            _this.mapView.selectedNodes.push(_this);
 
             _this.mapView.stage.update();
         });
@@ -132,5 +165,16 @@ class NodeView {
 
     updateLocation(x, y) {
 
+    }
+
+    delete() {
+        if (typeof this.model.content == "string") {
+            this.mapView.stage.removeChild(this.circle);
+            this.mapView.stage.removeChild(this.label);
+            if(this.model.parent != null){
+                this.model.parent.delete(this.model);
+            }
+            
+        }
     }
 }
