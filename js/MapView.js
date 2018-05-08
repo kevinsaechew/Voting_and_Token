@@ -1,3 +1,6 @@
+/* MapView creates the front-end for viewing a MapModel. It creates and displays a canvas along
+ * with buttons for interacting with the map.  
+   */
 class MapView {
     constructor(mapModel, stage, canvas, currUser) {
         this.model = mapModel;
@@ -27,7 +30,7 @@ class MapView {
     }
 
 
-
+    // Helper function that adds all the buttons to the user interface.
     addButtons() {
         var _this = this;
         var button = document.getElementById("zoom-out-button");
@@ -62,7 +65,8 @@ class MapView {
             _this.mainView = new NodeView(_this.mainView.model, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView, _this.mainFont);
             _this.stage.update();
         });
-    
+        
+        // Adds functionality to the EditLabel button.
         var editLabelButton = document.getElementById("edit-label-button");
         editLabelButton.addEventListener("click", function (event) {
             var newLabelName = document.getElementById('label-name').value;
@@ -74,6 +78,7 @@ class MapView {
             _this.stage.update();
         });
 
+        // Adds functionality to the upvote button.
         var upvoteButton = document.getElementById("Upvote-button");
         upvoteButton.addEventListener("click", function (event) {
             _this.lastClickedView.model.upvote();
@@ -86,6 +91,7 @@ class MapView {
             voteForNode(_this.lastClickedView.model.author.name, 1, _this.currUser.address, _this.lastClickedView.model.author.address);
         });
 
+        // Adds functionality to the downvote button.
         var downvoteButton = document.getElementById("Downvote-button");
         downvoteButton.addEventListener("click", function (event) {
             console.log("HERE");
@@ -93,7 +99,56 @@ class MapView {
             _this.lastClickedView.renderNode();
             _this.stage.update();
         });
+
+        // Here is the functionality for saving a map and later on uploading it
+        var saveButton = document.getElementById("Save-button");
+        saveButton.addEventListener("click", function (event) {
+            console.log(_this.model);
+            //console.log(JSON.stringify(_this.model));
+            var savedFile = JSON.stringify(_this.model, function(key, value) {
+                if( key == 'parent') { return null;} // Gets rid of circular reference error
+                else {return value;}
+              })
+
+              // This part actually saves it as a file on your computer
+              // Creates an invisble element and saves the text into a file
+              var element = document.createElement('a');
+              element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(savedFile));
+              element.setAttribute('download', "currentSavedMap.txt");
+          
+              element.style.display = 'none';
+              document.body.appendChild(element);
+              element.click();
+              document.body.removeChild(element);
+        });
+
+        // This imports the file
+        var importButton = document.getElementById('import');
+        importButton.onclick = function() {
+                var files = document.getElementById('selectFiles').files;
+                console.log(files);
+                if (files.length <= 0) {
+                    return false;
+            }
+            // This reads it
+            var fr = new FileReader();
+            fr.onload = function(e) { 
+                var result = JSON.parse(e.target.result); // This reverses the Json.stringify
+                var formatted = JSON.stringify(result, null, 2);
+                document.getElementById('result').value = formatted;
+
+                console.log(result); // Prints the result onto the console
+
+                var newRoot = new NodeModel(result.root.label, result.root.content, result.root.author);
+                // Uploads map from JSON data and displays it on screen.
+                _this.mainView = new NodeView(newRoot, _this.canvasWidth / 2, _this.canvasHeight / 2, 0, _this.mapView, this.mainFont);
+                _this.mapView.stage.update();
+            }
+            fr.readAsText(files.item(0));
+        };
+
     }
+    // Creates the Back button.
     createBackButton() {
         var backLabel = new createjs.Text("back", "Bold 16px Arial");
         backLabel.x = this.canvas.width / 2;

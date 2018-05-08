@@ -1,3 +1,5 @@
+/* NodeView is a class which renders the nodes and places them upon the map.
+   */
 class NodeView {
     constructor(nodeModel, x, y, depth, mapView, font) {
         this.mapView = mapView;
@@ -10,7 +12,7 @@ class NodeView {
         } else {
             this.defaultRadius = this.mapView.nodeRadius;
         }
-        this.radius = this.defaultRadius * this.model.weight;
+        this.radius = this.defaultRadius * 1;//this.model.weight;
         this.font = "18px Georgia";
         if(font != null) {
             this.font = font;
@@ -48,7 +50,7 @@ class NodeView {
             _this.mapView.stage.update();
         });
 
-
+        // 
         if (typeof nodeModel.content != "string") {
 
             if (_this.depth == 0) { //???
@@ -58,10 +60,12 @@ class NodeView {
             if (_this.depth == 1) { //???
                 _this.renderContent(nodeModel.content, 2.1*this.radius, "12px Georgia");
             }
+            // Updates the map have a mainview of the selected node and changes the stage
             _this.circle.addEventListener("dblclick", function (event) {
                 _this.mapView.mainView = new NodeView(nodeModel, _this.mapView.canvasWidth / 2, _this.mapView.canvasHeight / 2, 0, _this.mapView);
                 _this.mapView.stage.update();
             });
+        // if the content is a string, then it opens the URL in a new tab
         } else {
             _this.circle.addEventListener("dblclick", function (event) {
                 window.open(nodeModel.content);
@@ -69,6 +73,7 @@ class NodeView {
         }
     }
     
+    // Selects a node and is indicated by changing its stroke color
     selectNode(nodeView) {
         this.drawNode(nodeView, nodeView.selectedStrokeColor);
     }
@@ -77,6 +82,7 @@ class NodeView {
         this.drawNode(nodeView, nodeView.normalStrokeColor);
     }
 
+    // Draws a circle representing the node
     drawNode(nodeView, strokeColor) {
         nodeView.circle.graphics.clear().beginFill("#EEFFFF").drawCircle(nodeView.x, nodeView.y, nodeView.radius);
         nodeView.circle.graphics.beginStroke(strokeColor).drawCircle(nodeView.x, nodeView.y, nodeView.radius);
@@ -106,7 +112,7 @@ class NodeView {
 
     }
 
-
+    // Renders the content of a node by creating new NodeViews in a circular fashion for the NodeModels that are stored
     renderContent(content, rad, font) {
         if(rad == null) {
             rad = .42 * this.radius;
