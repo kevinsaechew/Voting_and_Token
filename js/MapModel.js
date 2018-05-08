@@ -13,25 +13,23 @@ class MapModel {
 
     // Adds a new node to an existing node's list
     addNode(existingNode, newNode) {
-        //newNode.parent = existingNode;
         existingNode.addNode(newNode);
         return newNode;
     }
 
     removeNode(node) {
-        // TODO: delete thisIsObject[node];
+        // TODO
     }
 
     groupUnderParent() {
-
+        // TODO
     }
 
     upvote() {
-
+        // TODO (currently this functionality is in the node classes)
     }
 
     downvote() {
-
+        // TODO (currently this functionality is in the node classes)
     }
-
 }

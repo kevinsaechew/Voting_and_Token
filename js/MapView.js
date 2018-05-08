@@ -10,8 +10,7 @@ class MapView {
         this.canvasWidth = canvas.width;
         this.canvasHeight = canvas.height;
         this.nodeRadius = 40;
-        this.bgNodeRadius = 280; // Larger Node Radius
-        
+        this.bgNodeRadius = 280; // Larger Background Node Radius
         this.selectedNodes = [];
         this.mapView = this;
         this.currUser = currUser;
@@ -22,9 +21,7 @@ class MapView {
     loadMapView() {
         this.createBackButton();
         this.stage.enableMouseOver(10);
-
-        this.mainView = new NodeView(this.model.root, this.canvasWidth / 2, this.canvasHeight / 2, 0, this.mapView, this.mainFont);
-        
+        this.mainView = new NodeView(this.model.root, this.canvasWidth / 2, this.canvasHeight / 2, 0, this.mapView, this.mainFont);        
         this.addButtons();
         this.stage.update();
     }
@@ -54,7 +51,7 @@ class MapView {
     
         });
     
-        // _this adds a completely new node that can be clicked 
+        // this adds a completely new node that can be clicked 
         var addNodeButton = document.getElementById("add-node-button");
         addNodeButton.addEventListener("click", function (event) {
             var nodeName = document.getElementById('node-name').value;
@@ -93,9 +90,7 @@ class MapView {
         var editLabelButton = document.getElementById("edit-label-button");
         editLabelButton.addEventListener("click", function (event) {
             var newLabelName = document.getElementById('label-name').value;
-            //console.log(newLabelName);
-    
-            //TODO: Make a method that's UpdateLabelText() in the View, which updates the model
+
             var i;
             for(i = 0; i < _this.selectedNodes.length; i++){
                 _this.selectedNodes[i].model.label = newLabelName;
@@ -115,9 +110,7 @@ class MapView {
             }
             _this.stage.update();
 
-            // todo: call the function to transfer tokens 
-            // from _this.currUser.address to _this.lastClickedView.model.author.address
-            //console.log();
+            // Calls the smart contract function to transfer tokens 
             voteForNode(_this.lastClickedView.model.author.name, 1, _this.currUser.address, _this.lastClickedView.model.author.address);
         });
 
@@ -132,11 +125,10 @@ class MapView {
             _this.stage.update();
         });
 
-        // Here is the functionality for saving a map and later on uploading it
+        // Functionality for saving a map and later on uploading it
         var saveButton = document.getElementById("Save-button");
         saveButton.addEventListener("click", function (event) {
             console.log(_this.model);
-            //console.log(JSON.stringify(_this.model));
             var savedFile = JSON.stringify(_this.model, function(key, value) {
                 if( key == 'parent') { return null;} // Gets rid of circular reference error
                 else {return value;}
@@ -154,7 +146,7 @@ class MapView {
               document.body.removeChild(element);
         });
 
-        // This imports the file
+        // Imports the file
         var importButton = document.getElementById('import');
         importButton.onclick = function() {
                 var files = document.getElementById('selectFiles').files;
@@ -162,7 +154,7 @@ class MapView {
                 if (files.length <= 0) {
                     return false;
             }
-            // This reads it
+            // Reads the file
             var fr = new FileReader();
             fr.onload = function(e) { 
                 var result = JSON.parse(e.target.result); // This reverses the Json.stringify
@@ -180,7 +172,7 @@ class MapView {
         };
 
     }
-    // Creates the Back button.
+
     createBackButton() {
         var backLabel = new createjs.Text("back", "Bold 16px Arial");
         backLabel.x = this.canvas.width / 2;
