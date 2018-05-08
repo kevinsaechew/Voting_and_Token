@@ -25,5 +25,26 @@ function load() {
     var canvas = document.getElementById('demoCanvas');
     mainMap = new MapView(mapModel, stage, canvas, mainUser);
 
-    // console.log(mapModel);
+    console.log(mapModel);
+}
+
+// Key Handling
+var keysPressed = [],
+    shiftCode = 16;
+
+$(document).on("keyup keydown", function(e) {
+    switch(e.type) {
+        case "keydown" :
+            keysPressed.push(e.keyCode);
+            break;
+        case "keyup" :
+            var idx = keysPressed.indexOf(e.keyCode);
+            if (idx >= 0)
+                keysPressed.splice(idx, 1);
+            break;
+    }
+});
+
+function isKeyPressed(code) {
+    return keysPressed.indexOf(code) >= 0;
 }
