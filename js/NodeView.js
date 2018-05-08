@@ -1,37 +1,19 @@
-var keysPressed = [],
-    shiftCode = 16;
-
-$(document).on("keyup keydown", function(e) {
-    switch(e.type) {
-        case "keydown" :
-            keysPressed.push(e.keyCode);
-            break;
-        case "keyup" :
-            var idx = keysPressed.indexOf(e.keyCode);
-            if (idx >= 0)
-                keysPressed.splice(idx, 1);
-            break;
-    }
-});
-
-function isKeyPressed(code) {
-    return keysPressed.indexOf(code) >= 0;
-}
-
 
 class NodeView {
     constructor(nodeModel, x, y, depth, mapView, font) {
         this.mapView = mapView;
-        
         this.model = nodeModel;
-
         this.defaultRadius;
+
+        // Set the highest level node as the large background node
         if (depth == 0) {
             this.defaultRadius = this.mapView.bgNodeRadius;
         } else {
             this.defaultRadius = this.mapView.nodeRadius;
         }
-        this.radius = this.defaultRadius * 1;//this.model.weight;
+
+        // Styling
+        this.radius = this.defaultRadius * 1;
         this.font = "18px Georgia";
         if(font != null) {
             this.font = font;
@@ -45,27 +27,22 @@ class NodeView {
             this.normalStrokeColor = "#FFFFFF";
         }
 
-        this.circle = new createjs.Shape(); //ehh
+        // Instantiate the UI elements and add them to the stage
+        this.circle = new createjs.Shape();
         this.label = new createjs.Text(this.model.label, this.font);
-        // this.command = this.circle.graphics.beginStroke("#009999").command;
         this.mapView.stage.addChild(this.circle);
         this.mapView.stage.addChild(this.label);
 
         this.renderNode();
 
-
-        
         var _this = this;
-        this.circle.addEventListener("click", function (event) {
-            
-            
-            // TODO - add in ID's
+        this.circle.addEventListener("click", function (event) {            
+            // TODO for later on - implement using ID's for nodes
             console.log(isKeyPressed(shiftCode));
 
-            // if shift is pressed
-
+            // if shift is pressed, deselect all nodes
             if (isKeyPressed(shiftCode) == false) {
-                // deselect
+                // deselect visually
                 if (_this.mapView.selectedNodes.length > 0) {
                     if (_this.mapView.selectedNodes[0].circle != _this.circle) {
                         var i;
@@ -74,32 +51,36 @@ class NodeView {
                         }
                     }
                 }
+                // clear selected nodes logically
                 _this.mapView.selectedNodes = [];
             }
-
+            
+            // select the new node 
             _this.selectNode(_this);
             _this.mapView.selectedNodes.push(_this);
 
             _this.mapView.stage.update();
         });
 
-        // 
+        // Render the content nodes surrounding the node model for the top two levels of nodes
         if (typeof nodeModel.content != "string") {
-
-            if (_this.depth == 0) { //???
+            if (_this.depth == 0) { 
                 _this.renderContent(nodeModel.content, .54*this.radius, "16px Georgia");
             }
 
-            if (_this.depth == 1) { //???
+            if (_this.depth == 1) {
                 _this.renderContent(nodeModel.content, 2.1*this.radius, "12px Georgia");
             }
-            // Updates the map have a mainview of the selected node and changes the stage
+
+            // "Tunnels" into a node on double click
+            // Updates the map to have a mainview of the selected node and changes the stage
             _this.circle.addEventListener("dblclick", function (event) {
                 _this.mapView.mainView = new NodeView(nodeModel, _this.mapView.canvasWidth / 2, _this.mapView.canvasHeight / 2, 0, _this.mapView);
                 _this.mapView.stage.update();
             });
         // if the content is a string, then it opens the URL in a new tab
         } else {
+            // Opens the URL of a node on double click
             _this.circle.addEventListener("dblclick", function (event) {
                 window.open(nodeModel.content);
             });
@@ -111,6 +92,7 @@ class NodeView {
         this.drawNode(nodeView, nodeView.selectedStrokeColor);
     }
 
+    // Deselects a node and is indicated by changing its stroke color
     deselectNode(nodeView) {
         this.drawNode(nodeView, nodeView.normalStrokeColor);
     }
@@ -123,10 +105,7 @@ class NodeView {
 
     renderNode() {
         //background ellipse
-        //this.circle = new createjs.Shape();
-
         this.radius = this.defaultRadius * this.model.weight;
-
         this.drawNode(this, this.normalStrokeColor);
 
         //if this is not the top-level node, show pointer cursor on hover
@@ -139,10 +118,8 @@ class NodeView {
         this.label.y = this.y - 9;
         this.label.color = "#004444";
         this.label.set({ textAlign: 'center' });
-
         
         this.mapView.stage.update();
-
     }
 
     // Renders the content of a node by creating new NodeViews in a circular fashion for the NodeModels that are stored
@@ -160,21 +137,20 @@ class NodeView {
     }
 
     updateLabel(newLabel) {
-
+        // TODO
     }
 
     updateLocation(x, y) {
-
+        // TODO
     }
 
     delete() {
         if (typeof this.model.content == "string") {
             this.mapView.stage.removeChild(this.circle);
             this.mapView.stage.removeChild(this.label);
-            if(this.model.parent != null){
+            if(this.model.parent != null) {
                 this.model.parent.delete(this.model);
             }
-            
         }
     }
 }
