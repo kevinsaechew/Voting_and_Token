@@ -37,15 +37,9 @@ window.downvoteForUser = function(user) {
   $("#user").val("");
   $("#vote-tokens").val("");
 
-<<<<<<< HEAD
-    contractInstance.downvoteForCandidate(candidateName, voteTokens, {gas: 140000, from: web3.eth.accounts[0]});//.then(function() {
-      let div_id = candidates[candidateName];
-      result = contractInstance.totalVotesFor.call(candidateName);
-=======
     contractInstance.downvoteForUser(userName, web3.eth.accounts[1], voteTokens, {gas: 140000, from: web3.eth.accounts[0]});//.then(function() {
       let div_id = users[userName];
       result = contractInstance.totalVotesFor.call(userName);
->>>>>>> ffe99cf0c9b05e40aa440f663a2541f1d864be4f
         $("#" + div_id).html(result.toString());
         $("#msg").html("");
       return result
@@ -59,12 +53,6 @@ window.voteForUser2 = function(user) {
   $("#user").val("");
   $("#vote-tokens").val("");
 
-<<<<<<< HEAD
-
-    contractInstance.voteForCandidate(candidateName, web3.eth.accounts[0], voteTokens, {gas: 140000, from: web3.eth.accounts[1]});//.then(function() {
-      let div_id = candidates[candidateName];
-      result = contractInstance.totalVotesFor.call(candidateName); 
-=======
   /* Voting.deployed() returns an instance of the contract. Every call
    * in Truffle returns a promise which is why we have used then()
    * everywhere we have a transaction call
@@ -72,7 +60,6 @@ window.voteForUser2 = function(user) {
     contractInstance.voteForUser(userName, web3.eth.accounts[0], voteTokens, {gas: 140000, from: web3.eth.accounts[1]});//.then(function() {
       let div_id = users[userName];
       result = contractInstance.totalVotesFor.call(userName); 
->>>>>>> ffe99cf0c9b05e40aa440f663a2541f1d864be4f
         $("#" + div_id).html(result.toString());
         $("#msg").html("");
       return result
