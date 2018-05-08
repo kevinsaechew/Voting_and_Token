@@ -10,12 +10,10 @@ class NodeModel {
         this.weight = 1;
         this.author = author;
 
-        console.log(this.content);
+        // If this node has children, set those children's parent as this node
         if (typeof this.content != "string") {
-            console.log("set parent");
             var i;
             for (i = 0; i < this.content.length; i++) {
-                console.log("for loop");
                 this.content[i].parent = this;
             }
         }
@@ -35,12 +33,6 @@ class NodeModel {
     }
 
     delete(node){
-    //    var arr = this.content;
-    //    for(var i = arr.length; i--;) {
-    //         if(arr[i] === item) {
-    //             arr.splice(i, 1);
-    //         }
-    //     }
         var idx = this.content.indexOf(node);
         keysPressed.splice(idx, 1);
     }
