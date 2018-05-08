@@ -6,14 +6,14 @@ function init() {
 }
 
 function load() {
-    // create a user
+    // Creates three users
     mainUser = new User('0x627306090abab3a6e1400e9345bc60c78a8bef57', "Ellen");
 
     secondUser = new User('0xf17f52151ebef6c7334fad080c5704d77216b732', "Kevin");
 
     thirdUser = new User('0xc5fdf4076b8f3a5357c5e395ab970b5b54098fef', "Maurice");
 
-    // create map model with a Modeling, and Method J node
+    // Creates the root node as well as a CG Animation and MethodJ node to start with
     var mapModel = new MapModel("CG Animation", mainUser);
     var modelingNM = mapModel.addNode(mapModel.root, new NodeModel("Modeling", [], secondUser));
     var secondUserNM = mapModel.addNode(mapModel.root, new NodeModel("secondUser", [], secondUser));
@@ -25,5 +25,5 @@ function load() {
     var canvas = document.getElementById('demoCanvas');
     mainMap = new MapView(mapModel, stage, canvas, mainUser);
 
-    console.log(mapModel);
+    // console.log(mapModel);
 }

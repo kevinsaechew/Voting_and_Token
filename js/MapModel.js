@@ -19,7 +19,7 @@ class MapModel {
     }
 
     removeNode(node) {
-        //delete thisIsObject[node];
+        // TODO: delete thisIsObject[node];
     }
 
     groupUnderParent() {

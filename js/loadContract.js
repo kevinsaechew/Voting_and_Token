@@ -153,6 +153,8 @@ function populateUsers() {
 
 }
 
+/* Fetches the number of votes the users have from their upvoted nodes
+ */
 function populateUserVotes() {
   let userNames = Object.keys(users);
   for (var i = 0; i < userNames.length; i++) {
@@ -163,6 +165,8 @@ function populateUserVotes() {
   }
 }
 
+/* Creates the UI for the rows of users and the number of upvotes/tokens they have
+ */
 function setupUserRows() {
   Object.keys(users).forEach(function (user) {
     $("#user-rows").append("<tr><td>" + user + "</td><td id='" + users[user] + "'></td></tr>");
