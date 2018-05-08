@@ -22,4 +22,6 @@ function load() {
     var stage = new createjs.Stage("demoCanvas");
     var canvas = document.getElementById('demoCanvas');
     mainMap = new MapView(mapModel, stage, canvas, mainUser);
+
+    console.log(mapModel);
 }
